@@ -73,6 +73,7 @@ $json_data = [
     "player_data" => $json_data
 ];
 
-sleep(5);
+//sleep(1);
+usleep(100000);
 
 echo json_encode($json_data, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
