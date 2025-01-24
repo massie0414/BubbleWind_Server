@@ -25,22 +25,26 @@ if( $res ) {
     $rowCount = $stmt->rowCount();
     if ($rowCount === 0) {
         // 新規
-        $sql = "insert into player_data (user_id, x, y, score, update_dt) values ( :user_id, :x, :y, :score, now() )";
+        $sql = "insert into player_data (user_id, x, y, z, score, update_dt, room_id) values ( :user_id, :x, :y, :z, :score, now(), :room_id )";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
         $stmt->bindParam(':y', $_GET['y'] );
+        $stmt->bindParam(':z', $_GET['z'] );
         $stmt->bindParam(':score', $_GET['score'] );
+        $stmt->bindParam(':room_id', $_GET['room_id'] );
         $stmt->execute();
     }
     else {
         // 上書き
-        $sql = "UPDATE player_data SET x = :x, y = :y, score = :score, update_dt = now() where user_id = :user_id";
+        $sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now(), room_id = :room_id where user_id = :user_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
         $stmt->bindParam(':y', $_GET['y'] );
+        $stmt->bindParam(':z', $_GET['z'] );
         $stmt->bindParam(':score', $_GET['score'] );
+        $stmt->bindParam(':room_id', $_GET['room_id'] );
         $stmt->execute();
     }
 }
@@ -51,8 +55,9 @@ $json_data = [];
 
 // $stmt = $pdo->prepare("SELECT * FROM test_data WHERE id = :id");
 // $stmt->bindParam(':id', $id);
-$stmt = $pdo->prepare("SELECT user_id, user_name, x, y, z, score FROM player_data WHERE user_id <> :user_id");
+$stmt = $pdo->prepare("SELECT user_id, user_name, x, y, z, score FROM player_data WHERE user_id <> :user_id and room_id = :room_id");
 $stmt->bindParam(':user_id', $_GET['user_id'] );
+$stmt->bindParam(':room_id', $_GET['room_id'] );
 $res = $stmt->execute();
 if( $res ) {
 //	$data = $stmt->fetch();
