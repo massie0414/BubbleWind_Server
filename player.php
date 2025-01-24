@@ -44,7 +44,8 @@ $json_data = [];
 
 // $stmt = $pdo->prepare("SELECT * FROM test_data WHERE id = :id");
 // $stmt->bindParam(':id', $id);
-$stmt = $pdo->prepare("SELECT user_id, user_name, x, y, z FROM player_data");
+$stmt = $pdo->prepare("SELECT user_id, user_name, x, y, z FROM player_data WHERE user_id <> :user_id");
+$stmt->bindParam(':user_id', $_GET['user_id'] );
 $res = $stmt->execute();
 if( $res ) {
 //	$data = $stmt->fetch();
