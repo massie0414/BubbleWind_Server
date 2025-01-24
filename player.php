@@ -11,6 +11,35 @@ $pdo = new PDO(
 //     "data" => "エラー"
 // ];
 
+// 登録処理
+$sql = "SELECT user_id FROM player_data WHERE user_id = :user_id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':user_id', $_GET['user_id'] );
+$res = $stmt->execute();
+if( $res ) {
+    $rowCount = $stmt->rowCount();
+    if ($rowCount === 0) {
+        // 新規
+        $sql = "insert into player_data (user_id, x, y) values ( :user_id, :x, :y )";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':user_id', $_GET['user_id'] );
+        $stmt->bindParam(':x', $_GET['x'] );
+        $stmt->bindParam(':y', $_GET['y'] );
+        $stmt->execute();
+    }
+    else {
+        // 上書き
+        $sql = "UPDATE player_data SET x = :x, y = :y where user_id = :user_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':user_id', $_GET['user_id'] );
+        $stmt->bindParam(':x', $_GET['x'] );
+        $stmt->bindParam(':y', $_GET['y'] );
+        $stmt->execute();
+    }
+}
+
+// 他プレイヤー（自分以外）の読み込み
+
 $json_data = [];
 
 // $stmt = $pdo->prepare("SELECT * FROM test_data WHERE id = :id");
