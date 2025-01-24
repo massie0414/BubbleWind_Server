@@ -20,20 +20,22 @@ if( $res ) {
     $rowCount = $stmt->rowCount();
     if ($rowCount === 0) {
         // 新規
-        $sql = "insert into player_data (user_id, x, y) values ( :user_id, :x, :y )";
+        $sql = "insert into player_data (user_id, x, y, score) values ( :user_id, :x, :y, :score )";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
         $stmt->bindParam(':y', $_GET['y'] );
+        $stmt->bindParam(':score', $_GET['score'] );
         $stmt->execute();
     }
     else {
         // 上書き
-        $sql = "UPDATE player_data SET x = :x, y = :y where user_id = :user_id";
+        $sql = "UPDATE player_data SET x = :x, y = :y, score = :score where user_id = :user_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
         $stmt->bindParam(':y', $_GET['y'] );
+        $stmt->bindParam(':score', $_GET['score'] );
         $stmt->execute();
     }
 }
@@ -44,7 +46,7 @@ $json_data = [];
 
 // $stmt = $pdo->prepare("SELECT * FROM test_data WHERE id = :id");
 // $stmt->bindParam(':id', $id);
-$stmt = $pdo->prepare("SELECT user_id, user_name, x, y, z FROM player_data WHERE user_id <> :user_id");
+$stmt = $pdo->prepare("SELECT user_id, user_name, x, y, z, score FROM player_data WHERE user_id <> :user_id");
 $stmt->bindParam(':user_id', $_GET['user_id'] );
 $res = $stmt->execute();
 if( $res ) {
@@ -62,6 +64,7 @@ if( $res ) {
             "x" => (float)$data[2],
             "y" => (float)$data[3],
             "z" => (float)$data[4],
+            "score" => (int)$data[5],
         ];
 
     }
