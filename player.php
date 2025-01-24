@@ -6,6 +6,11 @@ $pdo = new PDO(
     'password'
     );
 
+// タイムゾーンをJSTに設定
+$pdo->exec("SET time_zone = '+09:00'");
+
+date_default_timezone_set('Asia/Tokyo');
+
 // $json_data = [
 //     "id" => -1,
 //     "data" => "エラー"
@@ -20,7 +25,7 @@ if( $res ) {
     $rowCount = $stmt->rowCount();
     if ($rowCount === 0) {
         // 新規
-        $sql = "insert into player_data (user_id, x, y, score) values ( :user_id, :x, :y, :score )";
+        $sql = "insert into player_data (user_id, x, y, score, update_dt) values ( :user_id, :x, :y, :score, now() )";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
@@ -30,7 +35,7 @@ if( $res ) {
     }
     else {
         // 上書き
-        $sql = "UPDATE player_data SET x = :x, y = :y, score = :score where user_id = :user_id";
+        $sql = "UPDATE player_data SET x = :x, y = :y, score = :score, update_dt = now() where user_id = :user_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
