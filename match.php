@@ -12,16 +12,26 @@ $pdo->exec("SET time_zone = '+09:00'");
 date_default_timezone_set('Asia/Tokyo');
 
 $json_all_data = [];
-//$json_data = [];
 $room_id = 0;
 $status = 0;
 
-$stmt = $pdo->prepare("SELECT room_id, status FROM room_data");
+$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
+$res = $stmt->execute();
+if( $res ) {
+    $rowCount = $stmt->rowCount();
+    if ($rowCount === 0) {
+        // 追加
+        $sql = "insert into room_data (status) values (0)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+    }
+}
+
+$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
 $res = $stmt->execute();
 if( $res ) {
     $array = $stmt->fetchAll();
     foreach($array as $data){
-        //$json_data["room_id"] = (int)$data[0];
         $json_all_data["room_id"] = (int)$data[0];
         $room_id = (int)$data[0];
         $status = (int)$data[1];
