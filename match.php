@@ -15,7 +15,7 @@ $json_all_data = [];
 $room_id = 0;
 $status = 0;
 
-// すべて閉じられていたら作っておく（TODO これだと複数作られそう）
+// すべて閉じられていたら作っておく（TODO これだと複数作られそう？）
 $stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
 $res = $stmt->execute();
 if( $res ) {
@@ -28,6 +28,7 @@ if( $res ) {
     }
 }
 
+// ステータスの取得
 $stmt = $pdo->prepare("SELECT room_id, status FROM room_data where room_id = :room_id");
 $stmt->bindParam(':room_id', $_GET['room_id'] );
 $res = $stmt->execute();
@@ -41,6 +42,33 @@ if( $res ) {
 }
 
 $json_user_data = [];
+
+
+// 自分自身のルームIDを登録
+$sql = "SELECT user_id FROM player_data WHERE user_id = :user_id";
+$stmt = $pdo->prepare($sql);
+$stmt->bindParam(':user_id', $_GET['user_id'] );
+$res = $stmt->execute();
+if( $res ) {
+    $rowCount = $stmt->rowCount();
+    if ($rowCount === 0) {
+        // 新規
+        $sql = "insert into player_data (user_id, update_dt, room_id) values ( :user_id, now(), :room_id )";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':user_id', $_GET['user_id'] );
+        $stmt->bindParam(':room_id', $_GET['room_id'] );
+        $stmt->execute();
+    }
+    else {
+        // 上書き
+        $sql = "UPDATE player_data SET update_dt = now(), room_id = :room_id where user_id = :user_id";
+        $stmt = $pdo->prepare($sql);
+        $stmt->bindParam(':user_id', $_GET['user_id'] );
+        $stmt->bindParam(':room_id', $_GET['room_id'] );
+        $stmt->execute();
+    }
+}
+
 
 $stmt = $pdo->prepare("SELECT user_name FROM player_data WHERE room_id = :room_id");
 $stmt->bindParam(':room_id', $room_id );
