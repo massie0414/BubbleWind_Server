@@ -76,7 +76,7 @@ if( $res ) {
             "x" => (float)$data[2],
             "y" => (float)$data[3],
             "z" => (float)$data[4],
-            "score" => (int)$data[5],
+            "score" => (float)$data[5],
         ];
 
     }

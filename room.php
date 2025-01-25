@@ -15,7 +15,7 @@ date_default_timezone_set('Asia/Tokyo');
 $json_data = [];
 $status = 0;
 
-$stmt = $pdo->prepare("SELECT room_id, status FROM room_data");
+$stmt = $pdo->prepare("SELECT room_id FROM room_data where status = 0");
 $res = $stmt->execute();
 if( $res ) {
     $array = $stmt->fetchAll();
@@ -24,7 +24,7 @@ if( $res ) {
         //     "room_id" => (int)$data[0],
         // ];
         $json_data["room_id"] = (int)$data[0];
-        $status = (int)$data[1];
+        //$status = (int)$data[1];
     }
 }
 $pdo = null;
