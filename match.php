@@ -15,6 +15,7 @@ $json_all_data = [];
 $room_id = 0;
 $status = 0;
 
+// すべて閉じられていたら作っておく（TODO これだと複数作られそう）
 $stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
 $res = $stmt->execute();
 if( $res ) {
@@ -27,7 +28,8 @@ if( $res ) {
     }
 }
 
-$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
+$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where room_id = :room_id");
+$stmt->bindParam(':room_id', $_GET['room_id'] );
 $res = $stmt->execute();
 if( $res ) {
     $array = $stmt->fetchAll();
