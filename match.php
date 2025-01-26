@@ -60,8 +60,8 @@ if( $res ) {
         $stmt->execute();
     }
     else {
-        // 上書き
-        $sql = "UPDATE player_data SET update_dt = now(), room_id = :room_id where user_id = :user_id";
+        // 上書き 
+        $sql = "UPDATE player_data SET update_dt = now(), room_id = :room_id where user_id = :user_id and room_id <> :room_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':room_id', $_GET['room_id'] );
@@ -69,8 +69,8 @@ if( $res ) {
     }
 }
 
-
-$stmt = $pdo->prepare("SELECT user_name FROM player_data WHERE room_id = :room_id");
+// 現在マッチング中のユーザー一覧
+$stmt = $pdo->prepare("SELECT user_name FROM player_data WHERE room_id = :room_id order by update_dt;");
 $stmt->bindParam(':room_id', $room_id );
 $res = $stmt->execute();
 if( $res ) {
