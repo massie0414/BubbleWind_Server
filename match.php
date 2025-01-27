@@ -70,7 +70,7 @@ if( $res ) {
 }
 
 // 現在マッチング中のユーザー一覧
-$stmt = $pdo->prepare("SELECT user_name FROM player_data WHERE room_id = :room_id order by update_dt;");
+$stmt = $pdo->prepare("SELECT user_name FROM player_data WHERE room_id = :room_id order by update_dt asc");
 $stmt->bindParam(':room_id', $room_id );
 $res = $stmt->execute();
 if( $res ) {
