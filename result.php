@@ -14,7 +14,7 @@ date_default_timezone_set('Asia/Tokyo');
 
 
 // 登録処理
-$sql = "UPDATE player_data SET clear_time = now() where user_id = :user_id and clear_time IS NULL";
+$sql = "UPDATE player_data SET clear_time = now(3) where user_id = :user_id and clear_time IS NULL";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':user_id', $_GET['user_id'] );
 $stmt->execute();
