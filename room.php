@@ -15,6 +15,19 @@ date_default_timezone_set('Asia/Tokyo');
 $json_data = [];
 $status = 0;
 
+// すべて閉じられていたら作っておく（TODO これだと複数作られそう？）
+$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
+$res = $stmt->execute();
+if( $res ) {
+    $rowCount = $stmt->rowCount();
+    if ($rowCount === 0) {
+        // 追加
+        $sql = "insert into room_data (status) values (0)";
+        $stmt = $pdo->prepare($sql);
+        $stmt->execute();
+    }
+}
+
 $stmt = $pdo->prepare("SELECT room_id FROM room_data where status = 0");
 $res = $stmt->execute();
 if( $res ) {

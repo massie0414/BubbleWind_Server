@@ -11,38 +11,21 @@ $pdo->exec("SET time_zone = '+09:00'");
 
 date_default_timezone_set('Asia/Tokyo');
 
-$json_all_data = [];
-$room_id = 0;
-$status = 0;
+//$room_id = 0;
+//$status = 0;
 
 // すべて閉じられていたら作っておく（TODO これだと複数作られそう？）
-$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
-$res = $stmt->execute();
-if( $res ) {
-    $rowCount = $stmt->rowCount();
-    if ($rowCount === 0) {
-        // 追加
-        $sql = "insert into room_data (status) values (0)";
-        $stmt = $pdo->prepare($sql);
-        $stmt->execute();
-    }
-}
-
-// ステータスの取得
-$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where room_id = :room_id");
-$stmt->bindParam(':room_id', $_GET['room_id'] );
-$res = $stmt->execute();
-if( $res ) {
-    $array = $stmt->fetchAll();
-    foreach($array as $data){
-        $json_all_data["room_id"] = (int)$data[0];
-        $room_id = (int)$data[0];
-        $status = (int)$data[1];
-    }
-}
-
-$json_user_data = [];
-
+// $stmt = $pdo->prepare("SELECT room_id, status FROM room_data where status = 0");
+// $res = $stmt->execute();
+// if( $res ) {
+//     $rowCount = $stmt->rowCount();
+//     if ($rowCount === 0) {
+//         // 追加
+//         $sql = "insert into room_data (status) values (0)";
+//         $stmt = $pdo->prepare($sql);
+//         $stmt->execute();
+//     }
+// }
 
 // 自分自身のルームIDを登録
 $sql = "SELECT user_id FROM player_data WHERE user_id = :user_id";
@@ -69,9 +52,12 @@ if( $res ) {
     }
 }
 
+$json_user_data = [];
+$user_num = 0;
+
 // 現在マッチング中のユーザー一覧
 $stmt = $pdo->prepare("SELECT user_name FROM player_data WHERE room_id = :room_id order by update_dt asc");
-$stmt->bindParam(':room_id', $room_id );
+$stmt->bindParam(':room_id', $_GET['room_id'] );
 $res = $stmt->execute();
 if( $res ) {
     $array = $stmt->fetchAll();
@@ -79,7 +65,37 @@ if( $res ) {
         $json_user_data[] = [
             "user_name" => $data[0]
         ];
+        $user_num++;
+    }
+}
 
+if ( $user_num >= 16 ) {
+    // 16人以上なら閉じる
+    $sql = "UPDATE room_data SET status = 1 where room_id = :room_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':room_id', $_GET['room_id'] );
+    $stmt->execute();
+    
+    // TODO タイミングが早いですが、ここでスタートタイムを代入
+    $sql = "UPDATE player_data SET start_time = now(3), clear_time = null where room_id = :room_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':room_id', $_GET['room_id'] );
+    $stmt->execute();
+    
+}
+
+$json_all_data = [];
+
+// ステータスの取得
+$stmt = $pdo->prepare("SELECT room_id, status FROM room_data where room_id = :room_id");
+$stmt->bindParam(':room_id', $_GET['room_id'] );
+$res = $stmt->execute();
+if( $res ) {
+    $array = $stmt->fetchAll();
+    foreach($array as $data){
+        $json_all_data["room_id"] = (int)$data[0];
+        $room_id = (int)$data[0];
+        $status = (int)$data[1];
     }
 }
 
