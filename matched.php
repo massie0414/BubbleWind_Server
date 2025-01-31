@@ -17,7 +17,7 @@ $stmt->bindParam(':room_id', $_GET['room_id'] );
 $stmt->execute();
 
 // TODO タイミングが早いですが、ここでスタートタイムを代入
-$sql = "UPDATE player_data SET start_time = now(3), clear_time = null where room_id = :room_id";
+$sql = "UPDATE player_data SET start_time = now(3), clear_time = null, weather = 0 where room_id = :room_id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':room_id', $_GET['room_id'] );
 $stmt->execute();

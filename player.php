@@ -17,7 +17,7 @@ date_default_timezone_set('Asia/Tokyo');
 // ];
 
 // 登録処理
-$sql = "SELECT user_id, weather FROM player_data WHERE user_id = :user_id";
+$sql = "SELECT user_id FROM player_data WHERE user_id = :user_id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':user_id', $_GET['user_id'] );
 $res = $stmt->execute();
@@ -26,46 +26,45 @@ if( $res ) {
     if ($rowCount === 0) {
         // 新規
         //$sql = "insert into player_data (user_id, x, y, z, score, update_dt, room_id) values ( :user_id, :x, :y, :z, :score, now(), :room_id )";
-        $sql = "insert into player_data (user_id, x, y, z, score, update_dt, weather) values ( :user_id, :x, :y, :z, :score, now(), :weather)";
+        //$sql = "insert into player_data (user_id, x, y, z, score, update_dt, weather) values ( :user_id, :x, :y, :z, :score, now(), :weather)";
+        $sql = "insert into player_data (user_id, x, y, z, score, update_dt) values ( :user_id, :x, :y, :z, :score, now())";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
         $stmt->bindParam(':y', $_GET['y'] );
         $stmt->bindParam(':z', $_GET['z'] );
         $stmt->bindParam(':score', $_GET['score'] );
-        $stmt->bindParam(':weather', $_GET['weather'] );
+        //$stmt->bindParam(':weather', $_GET['weather'] );
         // $stmt->bindParam(':room_id', $_GET['room_id'] );
         $stmt->execute();
     }
     else {
-
-        // まず天気を反映する
-        $array = $stmt->fetchAll();
-        foreach($array as $data){
-            if((int)$data[1] != $_GET['weather']){
-                // 天気が変わった
-                $sql = "UPDATE player_data SET weather = :weather where room_id = :room_id";
-                $stmt = $pdo->prepare($sql);
-                $stmt->bindParam(':room_id', $_GET['room_id'] );
-                $stmt->bindParam(':weather', $_GET['weather'] );
-                $stmt->execute();
-            }
-        }
-
         // 上書き
         //$sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now(), room_id = :room_id where user_id = :user_id";
-        $sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now(), weather = :weather where user_id = :user_id";
+        //$sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now(), weather = :weather where user_id = :user_id";
+        $sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now() where user_id = :user_id";
         $stmt = $pdo->prepare($sql);
         $stmt->bindParam(':user_id', $_GET['user_id'] );
         $stmt->bindParam(':x', $_GET['x'] );
         $stmt->bindParam(':y', $_GET['y'] );
         $stmt->bindParam(':z', $_GET['z'] );
         $stmt->bindParam(':score', $_GET['score'] );
-        $stmt->bindParam(':weather', $_GET['weather'] );
+        //$stmt->bindParam(':weather', $_GET['weather'] );
         //$stmt->bindParam(':room_id', $_GET['room_id'] );
         $stmt->execute();
     }
 }
+
+// 天気を反映する
+if($_GET['weather'] != -1){
+    // 天気が変わった
+    $sql = "UPDATE player_data SET weather = :weather where room_id = :room_id";
+    $stmt = $pdo->prepare($sql);
+    $stmt->bindParam(':room_id', $_GET['room_id'] );
+    $stmt->bindParam(':weather', $_GET['weather'] );
+    $stmt->execute();
+}
+
 
 // 他プレイヤー（自分以外）の読み込み
 
