@@ -17,7 +17,7 @@ date_default_timezone_set('Asia/Tokyo');
 // ];
 
 // 登録処理
-$sql = "SELECT user_id FROM player_data WHERE user_id = :user_id";
+$sql = "SELECT user_id, weather FROM player_data WHERE user_id = :user_id";
 $stmt = $pdo->prepare($sql);
 $stmt->bindParam(':user_id', $_GET['user_id'] );
 $res = $stmt->execute();
@@ -38,6 +38,20 @@ if( $res ) {
         $stmt->execute();
     }
     else {
+
+        // まず天気を反映する
+        $array = $stmt->fetchAll();
+        foreach($array as $data){
+            if((int)$data[1] != $_GET['weather']){
+                // 天気が変わった
+                $sql = "UPDATE player_data SET weather = :weather where room_id = :room_id";
+                $stmt = $pdo->prepare($sql);
+                $stmt->bindParam(':room_id', $_GET['room_id'] );
+                $stmt->bindParam(':weather', $_GET['weather'] );
+                $stmt->execute();
+            }
+        }
+
         // 上書き
         //$sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now(), room_id = :room_id where user_id = :user_id";
         $sql = "UPDATE player_data SET x = :x, y = :y, z = :z, score = :score, update_dt = now(), weather = :weather where user_id = :user_id";
